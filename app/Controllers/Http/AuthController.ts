@@ -55,10 +55,13 @@ export default class AuthController {
     // });
     const { uid, password } = request.only(["uid", "password"]);
     try {
-      const token = await auth.attempt(uid, password);
+      const user = await auth.use("web").attempt(uid, password);
+      await auth.use("web").login(user);
+      console.log(user);
+
       const check = await auth.check();
       console.log(check);
-      return token;
+      return user;
     } catch (error) {
       console.log(error);
       return response.unauthorized("Invalid credentials");
